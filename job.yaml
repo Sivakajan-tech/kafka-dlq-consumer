@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-dlq-consumer-job
+  namespace: se
+spec:
+  template:
+    spec:
+      serviceAccountName: validator-management-service-account
+      containers:
+      - name: kafka-dlq-consumer
+        image: 590183927430.dkr.ecr.us-east-1.amazonaws.com/kafka-dlq-consumer:4.0
+        imagePullPolicy: Always
+        command: ["python", "consumer.py"]
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: <kafka server host>
+        - name: AWS_DEFAULT_REGION
+          value: us-east-1
+        - name: KAFKA_TOPIC
+          value: <topi name>
+        - name: KAFKA_GROUP_ID
+          value: <group id>
+        - name: MESSAGE_READ_COUNT
+          value: "2"
+      restartPolicy: Never
+  backoffLimit: 4
